@@ -116,7 +116,10 @@ class Linear(BQMView):
         self._bqm = bqm
 
     def __getitem__(self, v):
-        return self._bqm.get_linear(v)
+        try:
+            return self._bqm.get_linear(v)
+        except ValueError as e:
+            raise KeyError(e)
 
     def __iter__(self):
         return self._bqm.iter_variables()
@@ -407,6 +410,15 @@ class BQM(metaclass=abc.ABCMeta):
             ret.append(variable_order)
 
         return tuple(ret)
+
+    def relabel_variables(self, mapping, inplace=False):
+        if inplace:
+            raise NotImplementedError()
+
+        lin = {mapping[v]: w for v, w in self.linear.items()}
+        quad = {(mapping[u], mapping[v]): w for (u, v), w in self.quadratic.items()}
+
+        return self.__class__(lin, quad, self.offset, self.vartype)
 
 
 class ShapeableBQM(BQM):

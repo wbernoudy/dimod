@@ -124,7 +124,8 @@ def as_samples(samples_like, dtype=None, copy=False, order='C'):
     if isinstance(samples_like, SampleSet):
         # we implicitely support this by handling an iterable of mapping but
         # it is much faster to just do this here.
-        return samples_like.record.sample, list(samples_like.variables)
+        dtype_ = dtype or samples_like.record.sample.dtype
+        return samples_like.record.sample.astype(dtype_), list(samples_like.variables)
 
     if isinstance(samples_like, tuple) and len(samples_like) == 2:
         samples_like, labels = samples_like
